@@ -1,5 +1,7 @@
 import pmdarima as pm
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from pmdarima.metrics import smape
 
 simulation = 30 # how many days to run the simulation
 horizon = 3 # how far in the future the model forecasts
@@ -46,6 +48,9 @@ for t in range(simulation - horizon):
     forecast_predictions.append(fc)
     forecast_predictions_ci.append(ci)
     actuals.append(actual)
+
+print(f"Mean squared error: {mean_squared_error(actuals, forecast_predictions)}")
+print(f"SMAPE: {smape(actuals, forecast_predictions)}")
 
 plt.figure(figsize=(10, 6))
 

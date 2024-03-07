@@ -1,9 +1,17 @@
 import pmdarima as pm
 import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error
+from pmdarima.metrics import smape
 
 msft = pm.datasets.stocks.load_msft()
 
+simulation = 30 # how many days to run the simulation
+horizon = 3 # how far in the future the model forecasts
+
 prices = msft['Close']
+
+# NOTE: drops the first horizon prices to align with exogenous modelling challenge
+prices = prices[horizon:].reset_index(drop=True)
 
 train_size = int(len(prices) * 0.9)
 train, test = prices[:train_size], prices[train_size:]
@@ -22,9 +30,6 @@ model = pm.auto_arima(train, d=n_diffs,
 
 print(model.summary())
 
-simulation = 30 # how many days to run the simulation
-horizon = 3 # how far in the future the model forecasts
-
 forecast_predictions = []
 forecast_predictions_ci = []
 actuals = []
@@ -39,6 +44,9 @@ for t in range(simulation - horizon):
     forecast_predictions.append(fc)
     forecast_predictions_ci.append(ci)
     actuals.append(actual)
+
+print(f"Mean squared error: {mean_squared_error(actuals, forecast_predictions)}")
+print(f"SMAPE: {smape(actuals, forecast_predictions)}")
 
 plt.figure(figsize=(10, 6))
 

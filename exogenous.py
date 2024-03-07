@@ -11,8 +11,8 @@ exogenous = msft[['Open', 'High', 'Low', 'Volume']]
 
 # NOTE: Shift the exogenous features by the "horizon" period so that the model only
 # uses past day's values (up to the horizon) for predicting future closes.
-prices = prices[horizon:]
-exogenous = exogenous.shift(horizon)[horizon:] # shift and drop.
+prices = prices[horizon:].reset_index(drop=True)
+exogenous = exogenous.shift(horizon)[horizon:].reset_index(drop=True) # shift and drop.
 
 train_size = int(len(prices) * 0.9)
 train, test = prices[:train_size], prices[train_size:]
